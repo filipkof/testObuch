@@ -1,5 +1,7 @@
+import io.restassured.RestAssured;
 import org.example.WireMock;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class StudentTestApi {
 
     WireMock wireMock = new WireMock(5352);
+    String baseUrl = "http://localhost";
+
+    @BeforeAll
+    static void settings() {
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = 5352;
+    }
 
     @BeforeEach
     void setUp() {
@@ -24,7 +33,7 @@ public class StudentTestApi {
     @Test
     void testGetStudentValidId() {
         given()
-                .when().get("http://localhost:5352/student/1")
+                .when().get("/student/1")
                 .then()
                 .statusCode(200)
                 .body("name", equalTo("Андрей"),
@@ -34,7 +43,7 @@ public class StudentTestApi {
     @Test
     void testGetStudentInvalidId() {
         given()
-                .when().get("http://localhost:5352/student/2")
+                .when().get("/student/2")
                 .then()
                 .statusCode(404);
     }
@@ -49,7 +58,7 @@ public class StudentTestApi {
                           "name": "Андрей"
                         }
                         """)
-                .when().post("http://localhost:5352/student")
+                .when().post("/student")
                 .then()
                 .statusCode(201);
     }
@@ -64,7 +73,7 @@ public class StudentTestApi {
                           "name": "Дмитрий"
                         }
                         """)
-                .when().post("http://localhost:5352/student")
+                .when().post("/student")
                 .then()
                 .statusCode(201);
     }
@@ -78,7 +87,7 @@ public class StudentTestApi {
                           "name": "Иван"
                         }
                         """)
-                .when().post("http://localhost:5352/student")
+                .when().post("/student")
                 .then()
                 .statusCode(201)
                 .body("id", notNullValue());
@@ -92,7 +101,7 @@ public class StudentTestApi {
                         {
                         }
                         """)
-                .when().post("http://localhost:5352/student")
+                .when().post("/student")
                 .then()
                 .statusCode(400);
     }
@@ -100,7 +109,7 @@ public class StudentTestApi {
     @Test
     void testDeleteStudentValidId() {
         given()
-                .when().delete("http://localhost:5352/student/2")
+                .when().delete("/student/2")
                 .then()
                 .statusCode(200);
     }
@@ -108,7 +117,7 @@ public class StudentTestApi {
     @Test
     void testDeleteStudentInvalidId() {
         given()
-                .when().delete("http://localhost:5352/student/3")
+                .when().delete("/student/3")
                 .then()
                 .statusCode(404);
     }
@@ -116,7 +125,7 @@ public class StudentTestApi {
     @Test
     void testGetTopStudentsEmptyList() {
         String body = given()
-                .when().get("http://localhost:5352/topStudent")
+                .when().get("/topStudent")
                 .then()
                 .statusCode(200)
                 .extract().asString();
@@ -126,7 +135,7 @@ public class StudentTestApi {
     @Test
     void testGetTopStudentsWithoutGrades() {
         String body = given()
-                .when().get("http://localhost:5352/topStudent")
+                .when().get("/topStudent")
                 .then()
                 .statusCode(200)
                 .extract().asString();
@@ -136,7 +145,7 @@ public class StudentTestApi {
     @Test
     void testGetTopStudentWithMaxAverageGrade() {
         given()
-                .when().get("http://localhost:5352/topStudent")
+                .when().get("/topStudent")
                 .then()
                 .statusCode(200)
                 .body("id", notNullValue(),
@@ -146,7 +155,7 @@ public class StudentTestApi {
     @Test
     void testGetTopStudentsWithMaxAverageGrades() {
         given()
-                .when().get("http://localhost:5352/topStudent")
+                .when().get("/topStudent")
                 .then()
                 .statusCode(200)
                 .body("students", not(empty()))
