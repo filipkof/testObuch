@@ -178,4 +178,16 @@ public class Service {
         System.out.println("Исправлено имен: " + counter);
     }
 
+    public static int findCountOfEmployeeByDepartmentName(String departmentName) {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:.\\Office")) {
+            PreparedStatement stm = con.prepareStatement("SELECT COUNT(*) FROM Employee as e JOIN Department as d ON e.DepartmentID = d.ID WHERE d.NAME = ?");
+            stm.setString(1, departmentName);
+            ResultSet result = stm.executeQuery();
+            result.next();
+            return result.getInt(1);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return 0;
+    }
 }

@@ -134,6 +134,18 @@ public enum Option {
             Service.fixEmployeeName();
         }
     },
+    COUNT_OF_EMPLOYEE_BY_DEPARTMENT_NAME {
+        String getText() {
+            return this.ordinal() + ".Кол-во сотрудников в отделе";
+        }
+
+        void action() {
+            System.out.println("Введите Название отдела:");
+            String departmentName = sc.next();
+            int count = Service.findCountOfEmployeeByDepartmentName(departmentName);
+            System.out.println(count);
+        }
+    },
     EXIT {
         String getText() {
             return this.ordinal() + ".Выход";
