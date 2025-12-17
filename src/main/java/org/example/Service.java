@@ -134,4 +134,48 @@ public class Service {
         updateEmployeeDepartmentById(departmentId, employeeIds.getFirst());
         System.out.println("Успешно обновили запись у сотрудника " + employeeIds.getFirst());
     }
+
+    public static List<Employee> findAllEmployeeIdsAndNames() {
+        List<Employee> employees = new ArrayList<>();
+
+        try (Connection con = DriverManager.getConnection("jdbc:h2:.\\Office")) {
+            PreparedStatement stm = con.prepareStatement("SELECT ID, NAME, DepartmentID FROM Employee");
+            ResultSet result = stm.executeQuery();
+            while (result.next()) {
+                employees.add(new Employee(result.getInt("ID"),
+                        result.getString("NAME"), result.getInt("DepartmentID")));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return employees;
+    }
+
+    public static int updateEmployeeNameById(String employeeName, int employeeId) {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:.\\Office")) {
+            PreparedStatement stm = con.prepareStatement("UPDATE Employee SET NAME = ? WHERE ID = ?");
+            stm.setString(1, employeeName);
+            stm.setInt(2, employeeId);
+            return stm.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return 0;
+    }
+
+    public static void fixEmployeeName() {
+        List<Employee> employees = findAllEmployeeIdsAndNames();
+
+        int counter = employees.stream()
+                .filter(e -> e.getName() != null && !e.getName().isEmpty())
+                .filter(e -> Character.isLowerCase(e.getName().charAt(0)))
+                .mapToInt(e -> {
+                    String fixedName =
+                            Character.toUpperCase(e.getName().charAt(0)) + e.getName().substring(1);
+                    return updateEmployeeNameById(fixedName, e.getEmployeeId());
+                })
+                .sum();
+        System.out.println("Исправлено имен: " + counter);
+    }
+
 }

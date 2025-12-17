@@ -125,6 +125,15 @@ public enum Option {
             Service.findOneEmployeeByNameAndMoveToDepartment(employeeName, departmentName);
         }
     },
+    FIX_EMPLOYEE_NAMES {
+        String getText() {
+            return this.ordinal() + ".Исправление ошибок в именах";
+        }
+
+        void action() {
+            Service.fixEmployeeName();
+        }
+    },
     EXIT {
         String getText() {
             return this.ordinal() + ".Выход";
