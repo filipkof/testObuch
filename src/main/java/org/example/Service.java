@@ -1,10 +1,8 @@
 package org.example;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Service {
 
@@ -78,5 +76,73 @@ public class Service {
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    // тут мое
+    public static void removeEmployeeById(int employeeId) {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:.\\Office")) {
+            PreparedStatement stm = con.prepareStatement("DELETE FROM Employee WHERE ID=?");
+            stm.setInt(1, employeeId);
+            stm.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // тут мое
+    public static void removeDepartmentById(int departmentId) {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:.\\Office")) {
+            PreparedStatement stm = con.prepareStatement("DELETE FROM Department WHERE ID=?");
+            stm.setInt(1, departmentId);
+            stm.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // тут мое
+    public static List<Integer> findEmployeeIdByName(String name) {
+        List<Integer> employeeIds = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection("jdbc:h2:.\\Office")) {
+            PreparedStatement stm = con.prepareStatement("SELECT ID FROM Employee WHERE NAME = ?");
+            stm.setString(1, name);
+            ResultSet result = stm.executeQuery();
+            while (result.next()) {
+                employeeIds.add(result.getInt(1));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return employeeIds;
+    }
+
+    // тут мое
+    public static Department findDepartmentById(int departmentId) {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:.\\Office")) {
+            PreparedStatement stm = con.prepareStatement("SELECT * FROM Department WHERE ID = ?");
+            stm.setInt(1, departmentId);
+            ResultSet result = stm.executeQuery();
+            if (result.next()) {
+                return new Department(result.getInt("ID"), result.getString("NAME"));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    // тут мое
+    public static Employee findEmployeeById(int employeeId) {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:.\\Office")) {
+            PreparedStatement stm = con.prepareStatement("SELECT * FROM Employee WHERE ID = ?");
+            stm.setInt(1, employeeId);
+            ResultSet result = stm.executeQuery();
+            if (result.next()) {
+                return new Employee(result.getInt("ID"), result.getString("NAME"), result.getInt("DepartmentID"));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
     }
 }
