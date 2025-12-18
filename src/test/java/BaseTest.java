@@ -59,4 +59,20 @@ public class BaseTest {
         Service.removeEmployeeById(157);
         Service.removeDepartmentById(88888);
     }
+
+    @Test
+    public void testDeleteAllEmployeesByDepartmentPositive() {
+        Service.createDB();
+        Service.addDepartment(new Department(44, "JZ"));
+        Service.addEmployee(new Employee(255, "Ивантестовый", 44));
+        Service.addEmployee(new Employee(256, "Ивантестовый", 44));
+        Service.removeDepartment(new Department(44, ""));
+
+        int employeesIds = Service.findEmployeeIdByName("Ивантестовый").size();
+        Assert.assertEquals(0, employeesIds);
+
+        Service.removeEmployeeById(255);
+        Service.removeEmployeeById(256);
+        Service.removeDepartmentById(44);
+    }
 }
