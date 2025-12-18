@@ -21,6 +21,13 @@
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>my-lib</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/h2-1.4.199.jar</systemPath>
+        </dependency>
     </dependencies>
 
 </project>
