@@ -45,6 +45,11 @@ public class Service {
 
     public static void removeDepartment(Department d) {
         try (Connection con = DriverManager.getConnection("jdbc:h2:.\\Office")) {
+            PreparedStatement deleteEmployees =
+                    con.prepareStatement("DELETE FROM Employee WHERE DepartmentID = ?");
+            deleteEmployees.setInt(1, d.departmentID);
+            deleteEmployees.executeUpdate();
+
             PreparedStatement stm = con.prepareStatement("DELETE FROM Department WHERE ID=?");
             stm.setInt(1, d.departmentID);
             stm.executeUpdate();
