@@ -1,8 +1,6 @@
 package pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -32,6 +30,13 @@ public class PobedaPage {
     private final By readyToFlightButtonInInformationButtonMenu = By.xpath("//a[@href='/information#flight']");
     private final By usefulInformationButtonInInformationButtonMenu = By.xpath("//a[@href='/information#useful']");
     private final By aboutCompanyButtonInInformationButtonMenu = By.xpath("//a[@href='/information#company']");
+    private final By fromFindTicketInput = By.xpath("//input[@placeholder='Откуда']");
+    private final By toFindTicketInput = By.xpath("//input[@placeholder='Куда']");
+    private final By dateFromFindTicketInputWrapper = By.xpath("//input[@placeholder='Туда']/ancestor::div[contains(@class,'dp-1dr6zbu-root')][1]");
+    private final By dateFromFindTicketInput = By.xpath("//input[@placeholder='Туда']");
+    private final By dateToFindTicketInput = By.xpath("//input[@placeholder='Обратно']");
+    private final By searchPanel = By.cssSelector(".dp-s7nf6s-root");
+    private final By searchPanelSubmitButton = By.cssSelector("button.dp-14pgyec-root-root-root");
 
 
     public PobedaPage open() {
@@ -66,11 +71,40 @@ public class PobedaPage {
         return this;
     }
 
+    public PobedaPage scrollToSearchPanel() {
+        scrollTo(searchPanel);
+        return this;
+    }
+
+    public PobedaPage checkVisibleSearchPanel() {
+        awaitVisibleElement(fromFindTicketInput);
+        awaitVisibleElement(toFindTicketInput);
+        awaitVisibleElement(dateFromFindTicketInput);
+        awaitVisibleElement(dateToFindTicketInput);
+        return this;
+    }
+
+    public PobedaPage setFromAndToTicketInput(String from, String to) {
+        setTextToElement(fromFindTicketInput, from);
+        setEnter(fromFindTicketInput);
+        setTextToElement(toFindTicketInput, to);
+        setEnter(toFindTicketInput);
+        return this;
+    }
+
+    public PobedaPage clickSearchPanelSubmitButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(searchPanelSubmitButton))
+                .click();
+        return this;
+    }
+
+    public PobedaPage checkErrorDateFromFindTicketInput() {
+        awaitInputSearchPanelHasError(dateFromFindTicketInputWrapper);
+        return this;
+    }
+
     public PobedaPage checkLoadLogo() {
-        await()
-                .atMost(Duration.ofSeconds(10))
-                .pollInterval(Duration.ofMillis(500))
-                .until(() -> !driver.findElements(pobedaLogo).isEmpty());
+        awaitVisibleElement(pobedaLogo);
         return this;
     }
 
@@ -98,6 +132,42 @@ public class PobedaPage {
         return wd.getText();
     }
 
+    private void setTextToElement(By element, String text) {
+        WebElement wd = wait.until(ExpectedConditions.visibilityOfElementLocated(element));
+        wd.clear();
+        wd.sendKeys(text);
+    }
+
+    private void setEnter(By element) {
+        WebElement wd = wait.until(ExpectedConditions.elementToBeClickable(element));
+        wd.sendKeys(Keys.ENTER);
+    }
+
+    private void awaitVisibleElement(By element) {
+        await()
+                .atMost(Duration.ofSeconds(10))
+                .pollInterval(Duration.ofMillis(200))
+                .ignoreExceptions()
+                .until(() -> driver.findElements(element).stream().anyMatch(WebElement::isDisplayed));
+    }
+
+    private void scrollTo(By locator) {
+        await()
+                .atMost(Duration.ofSeconds(10))
+                .until(() -> !driver.findElements(locator).isEmpty());
+
+        WebElement element = driver.findElement(locator);
+
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].scrollIntoView({block:'center'});", element);
+    }
+
+    private void awaitInputSearchPanelHasError(By locator) {
+        await()
+                .atMost(Duration.ofSeconds(10))
+                .pollInterval(Duration.ofMillis(200))
+                .until(() -> driver.findElement(locator).getAttribute("data-failed") != null);
+    }
 
     public PobedaPage waitUntilSlideIsActive(String titleText) {
         By titleInSlide = By.xpath(

@@ -2,6 +2,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import pages.GooglePage;
@@ -18,7 +19,7 @@ public class PobedaTests {
     @BeforeAll
     static void setUp() {
         driver = new ChromeDriver();
-        driver.manage().window().maximize();
+        driver.manage().window().setSize(new Dimension(1400, 900));
         pobedaPage = new PobedaPage(driver);
         googlePage = new GooglePage(driver);
     }
@@ -49,6 +50,22 @@ public class PobedaTests {
         });
     }
 
+    @Test
+    void testVisibleOfSearchPanel() {
+        pobedaPage
+                .open()
+                .scrollToSearchPanel()
+                .checkVisibleSearchPanel();
+    }
+
+    @Test
+    void chekFlkSearchPanel() {
+        pobedaPage
+                .open()
+                .setFromAndToTicketInput("Москва", "Саратов")
+                .clickSearchPanelSubmitButton()
+                .checkErrorDateFromFindTicketInput();
+    }
 
 
     @Test
