@@ -1,10 +1,13 @@
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import pages.GooglePage;
 import pages.PobedaPage;
+
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 public class PobedaTests {
 
@@ -19,6 +22,33 @@ public class PobedaTests {
         pobedaPage = new PobedaPage(driver);
         googlePage = new GooglePage(driver);
     }
+
+    @Test
+    void testLoadMainPage() {
+        String titleText = pobedaPage
+                .open()
+                .checkLoadLogo()
+                .getTitle();
+        Assertions.assertEquals("Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками", titleText);
+    }
+
+    @Test
+    void testCheckInfoMenu() {
+       pobedaPage
+                .open()
+                .hoverToInformationButtonMenu();
+        assertSoftly(softly -> {
+            softly.assertThat(pobedaPage.getTextFromReadyToFlightButton())
+                    .isEqualTo("Подготовка к полёту");
+
+            softly.assertThat(pobedaPage.getTextFromUsefulInformationButton())
+                    .isEqualTo("Полезная информация");
+
+            softly.assertThat(pobedaPage.getTextFromAboutCompanyButton())
+                    .isEqualTo("О компании");
+        });
+    }
+
 
 
     @Test
