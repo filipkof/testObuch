@@ -37,7 +37,13 @@ public class PobedaPage {
     private final By dateToFindTicketInput = By.xpath("//input[@placeholder='Обратно']");
     private final By searchPanel = By.cssSelector(".dp-s7nf6s-root");
     private final By searchPanelSubmitButton = By.cssSelector("button.dp-14pgyec-root-root-root");
-
+    private final By bookingButton = By.xpath("//button[.//span[.='Управление бронированием' and not(@aria-hidden)]]");
+    private final By surnameInput = By.xpath("//input[@placeholder='Фамилия клиента']");
+    private final By bookingNumberInput = By.xpath("//input[@placeholder='Номер бронирования или билета']");
+    private final By bookingManagementSubmitButton = By.cssSelector("button.dp-tsteac-root-root-submitBtn");
+    private final By checkBox = By.xpath("//label[@for='searchOrderAgreeChb']");
+    private final By findOrderButton = By.xpath("//button[text()='Найти заказ']");
+    private final By errorMessage = By.cssSelector(".message_error");
 
     public PobedaPage open() {
         driver.get("https://www.flypobeda.ru/");
@@ -84,6 +90,13 @@ public class PobedaPage {
         return this;
     }
 
+    public PobedaPage checkVisibleBookingManagementPanel() {
+        awaitVisibleElement(surnameInput);
+        awaitVisibleElement(bookingNumberInput);
+        awaitVisibleElement(bookingManagementSubmitButton);
+        return this;
+    }
+
     public PobedaPage setFromAndToTicketInput(String from, String to) {
         setTextToElement(fromFindTicketInput, from);
         setEnter(fromFindTicketInput);
@@ -95,6 +108,54 @@ public class PobedaPage {
     public PobedaPage clickSearchPanelSubmitButton() {
         wait.until(ExpectedConditions.elementToBeClickable(searchPanelSubmitButton))
                 .click();
+        return this;
+    }
+
+    public PobedaPage clickBookingManagementSubmitButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(bookingManagementSubmitButton))
+                .click();
+        return this;
+    }
+
+    public PobedaPage clickBookingButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(bookingButton))
+                .click();
+        return this;
+    }
+
+    public PobedaPage setSurnameAndBookingNumberInput(String surnameBooking, String bookingNumber) {
+        setTextToElement(surnameInput, surnameBooking);
+        setTextToElement(bookingNumberInput, bookingNumber);
+        return this;
+    }
+
+    public PobedaPage clickFindOrderButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(findOrderButton))
+                .click();
+        return this;
+    }
+
+    public PobedaPage clickCheckBox() {
+        wait.until(ExpectedConditions.elementToBeClickable(checkBox))
+                .click();
+        return this;
+    }
+
+    public String getErrorMessage() {
+        return getTextFromElement(errorMessage);
+    }
+
+    public PobedaPage switchToNewTab() {
+        String current = driver.getWindowHandle();
+
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(d -> d.getWindowHandles().size() > 1);
+
+        driver.getWindowHandles().stream()
+                .filter(h -> !h.equals(current))
+                .findFirst()
+                .ifPresent(h -> driver.switchTo().window(h));
+
         return this;
     }
 

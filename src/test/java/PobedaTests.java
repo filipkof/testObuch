@@ -19,7 +19,7 @@ public class PobedaTests {
     @BeforeAll
     static void setUp() {
         driver = new ChromeDriver();
-        driver.manage().window().setSize(new Dimension(1400, 900));
+        driver.manage().window().maximize();
         pobedaPage = new PobedaPage(driver);
         googlePage = new GooglePage(driver);
     }
@@ -65,6 +65,21 @@ public class PobedaTests {
                 .setFromAndToTicketInput("Москва", "Саратов")
                 .clickSearchPanelSubmitButton()
                 .checkErrorDateFromFindTicketInput();
+    }
+
+    @Test
+    void testBookingManagement() {
+        String errorTxt = pobedaPage
+                .open()
+                .clickBookingButton()
+                .checkVisibleBookingManagementPanel()
+                .setSurnameAndBookingNumberInput("Qwerty", "XXXXXX")
+                .clickBookingManagementSubmitButton()
+                .switchToNewTab()
+                .clickCheckBox()
+                .clickFindOrderButton()
+                .getErrorMessage();
+        Assertions.assertEquals("Заказ с указанными параметрами не найден", errorTxt);
     }
 
 
